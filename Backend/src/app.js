@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "https://gen-ai-interview-675p6rd2b-hussainfareeds-projects.vercel.app",
     credentials: true
 }));
 
