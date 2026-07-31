@@ -1,5 +1,6 @@
 import axios from "axios";
 
+
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
     withCredentials: true
@@ -15,63 +16,38 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-export async function register({username, email, password}){
-    try{
-        const response = await api.post("/api/auth/register", {
-            username, email, password
-         });
+export const generateInterviewReport = async ({jobDescription, selfDescription, resumeFile})=>{
 
-        if(response.data?.token){
-            localStorage.setItem("token", response.data.token);
+    const formData = new FormData()
+    formData.append("jobDescription", jobDescription)
+    formData.append("selfDescription", selfDescription)
+    formData.append("resume", resumeFile)
+
+    const response = await api.post("/api/interview/", formData, {
+        headers: {
+            "Content-Type": "multipart/form-data"
         }
+    })
 
-        return response.data
-    }catch(err){
-        console.log(err);
-        throw err;
-    }
+    return response.data
 };
 
-export async function login({email, password}){
-    try{
-        const response = await api.post("/api/auth/login", {
-            email, password
-        });
+export const getInterviewReportById = async (interviewId)=>{
+    const response = await  api.get(`/api/interview/report/${interviewId}`)
 
-        if(response.data?.token){
-            localStorage.setItem("token", response.data.token);
-        }
-
-        return response.data
-
-    }catch(err){
-        console.log(err);
-        throw err;
-    }
+    return response.data
 };
 
-export async function logout(){
-    try{
-        const response = await api.get("/api/auth/logout");
+export const getAllInterviewReports = async (interviewId)=>{
+    const response = await api.get("/api/interview/")
 
-        localStorage.removeItem("token");
-
-        return response.data
-    }catch(err){
-        console.log(err)
-        localStorage.removeItem("token");
-        throw err;
-    }
+    return response.data
 };
 
-export async function getMe(){
-    try{
-        const response = await api.get("/api/auth/get-me");
+export const generateResumePdf = async({interviewReportId})=>{
+    const response = await api.post(`/api/interview/resume/pdf/${interviewReportId}`, null, {
+        responseType: "blob"
+    })
 
-        return response.data;
-        
-    }catch(err){
-        console.log(err)
-        throw err;
-    }
+    return response.data
 };
