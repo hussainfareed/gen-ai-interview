@@ -40,14 +40,15 @@ async function registerUserController(req,res){
     );
 
     res.cookie("token", token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    maxAge: 24 * 60 * 60 * 1000 // 1 din
-});
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: 24 * 60 * 60 * 1000 // 1 din
+    });
 
     res.status(201).json({
         message: "user registered successfully", 
+        token, // ⬅ ab token JSON response mein bhi milega (Safari cookie-block ke liye backup)
         user:{
             id: user._id,
             username: user.username,
@@ -87,14 +88,15 @@ async function loginUserController(req,res){
     );
 
     res.cookie("token", token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    maxAge: 24 * 60 * 60 * 1000 // 1 din
-});
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: 24 * 60 * 60 * 1000 // 1 din
+    });
 
     res.status(200).json({
         message: "User login successfully",
+        token, // ⬅ ab token JSON response mein bhi milega (Safari cookie-block ke liye backup)
         user: {
             id: user._id,
             username: user.username,
@@ -104,17 +106,17 @@ async function loginUserController(req,res){
 }
 
 async function logoutUserController(req,res){
-    const token = req.cookies.token;
+    const token = req.cookies.token || (req.headers.authorization && req.headers.authorization.split(" ")[1]);
 
     if(token){
         await tokenBlacklistModel.create({token})
     };
 
     res.clearCookie("token", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none"
-});
+        httpOnly: true,
+        secure: true,
+        sameSite: "none"
+    });
 
     res.status(200).json({
         message: "user logged out successfully"

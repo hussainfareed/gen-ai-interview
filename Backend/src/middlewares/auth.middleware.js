@@ -3,7 +3,8 @@ const tokenBlacklistModel = require("../models/blacklist.model");
 
 async function authUser(req,res,next){
 
-    const token = req.cookies.token;
+    // Pehle cookie check karo, agar nahi mili to Authorization header check karo (Safari/iOS fix)
+    const token = req.cookies.token || (req.headers.authorization && req.headers.authorization.split(" ")[1]);
 
     if(!token){
         res.status(400).json({message: "Token not provided"})
