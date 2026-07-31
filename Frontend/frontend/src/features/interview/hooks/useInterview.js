@@ -15,55 +15,53 @@ export const useInterview = ()=>{
 
     const generateReport = async ({jobDescription, selfDescription, resumeFile})=>{
         setLoading(true)
-        let response = null;
         try{
-             response = await generateInterviewReport({jobDescription, selfDescription, resumeFile})
+             const response = await generateInterviewReport({jobDescription, selfDescription, resumeFile})
             setReport(response.interviewReport)
+            return response.interviewReport
         }catch(err){
             console.log(err)
+            alert(err?.response?.data?.message || "Report generate nahi ho saka. Dobara try karein.")
+            throw err
         }finally{
             setLoading(false)
         }
-
-        return response.interviewReport
     }
 
     const getReportById = async (interviewId)=>{
         setLoading(true)
-        let response = null;
         try{
-             response = await getInterviewReportById(interviewId);
+             const response = await getInterviewReportById(interviewId);
             setReport(response.interviewReport)
+            return response.interviewReport
         }catch(err){
             console.log(err)
+            alert(err?.response?.data?.message || "Report was not loaded")
+            throw err
         }finally{
             setLoading(false)
         }
-
-        return response.interviewReport
     }
 
     const getReports = async()=>{
         setLoading(true)
-        let response = null;
         try{
-             response = await getAllInterviewReports();
+             const response = await getAllInterviewReports();
             setReports(response.interviewReports)
+            return response.interviewReports;
         }catch(err){
             console.log(err)
+            return []
         }finally{
             setLoading(false)
         }
-
-        return response.interviewReports;
     };
 
 
     const getResumePdf = async (interviewReportId) => {
     setLoading(true)
-    let response = null
     try {
-        response = await generateResumePdf({ interviewReportId })
+        const response = await generateResumePdf({ interviewReportId })
         const url = window.URL.createObjectURL(new Blob([ response ], { type: "application/pdf" }))
         const link = document.createElement("a")
         link.href = url
@@ -73,6 +71,8 @@ export const useInterview = ()=>{
     }
     catch (error) {
         console.log(error)
+        alert(error?.response?.data?.message || "PDF not dowanload")
+        throw error
     } finally {
         setLoading(false)
     }
